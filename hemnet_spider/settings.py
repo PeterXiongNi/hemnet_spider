@@ -14,7 +14,6 @@ BOT_NAME = 'hemnet_spider'
 SPIDER_MODULES = ['hemnet_spider.spiders']
 NEWSPIDER_MODULE = 'hemnet_spider.spiders'
 
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'hemnet_spider (+http://www.yourdomain.com)'
 
@@ -88,3 +87,13 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Output into csv
+FEED_FORMAT = "csv"
+FEED_URI = "spider_results/%(name)s.csv"
+
+# Overwrites existing files for spider output
+FEED_STORAGES_BASE = {
+    '': 'hemnet_spider.customexport.OverwriteFileFeedStorage',
+    'file': 'hemnet_spider.customexport.OverwriteFileFeedStorage',
+}

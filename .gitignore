@@ -1,1 +1,3 @@
 __pycache__/
+spider_results/
+*.log
