@@ -29,11 +29,10 @@ class HemnetStockholmSold12mSpider(scrapy.Spider):
             request.meta['item'] = item
             yield request
         next_page = response.css('.next_page').xpath('@href').get()
-        """
+
         if next_page:
             yield scrapy.Request(response.urljoin(next_page),
                                  callback=self.scrape)
-        """
 
     def get_listing_details(self, response):
         item = response.meta['item']
@@ -56,15 +55,18 @@ class HemnetStockholmSold12mSpider(scrapy.Spider):
         item['sold_price'] = response.css(
             '.sold-property__price-value::text').get().replace(u'\xa0',
                                                                '').strip()
-        item['price_per_area'] = map_data.get('listing').get(
-            'price_per_area').replace(u'\xa0', '').strip()
+        price_per_area = map_data.get('listing').get('price_per_area')
+        if price_per_area:
+            item['price_per_area'] = price_per_area.replace(u'\xa0',
+                                                            '').strip()
         item['fee'] = map_data.get('listing').get('fee')
         asked_price = map_data.get('listing').get('asked_price')
         if asked_price:
             item['asked_price'] = ''.join(
                 [s for s in asked_price.replace(u'\xa0', '') if s.isdigit()])
-        item['rooms'] = map_data.get('listing').get('rooms').replace(
-            'rum', '').strip()
+        rooms = map_data.get('listing').get('rooms')
+        if rooms:
+            item['rooms'] = rooms.replace('rum', '').strip()
         item['living_space'] = map_data.get('listing').get('living_space')
         item['supplemental_area'] = map_data.get('listing').get(
             'supplemental_area')
@@ -72,8 +74,9 @@ class HemnetStockholmSold12mSpider(scrapy.Spider):
         item['broker_name'] = response.css(
             '.broker-contact-card__information strong::text').get().replace(
                 '\n', '').strip()
-        item['broker_agency'] = response.css(
-            '.broker-link::text').get().replace('\n', '').strip()
+        broker_agency = response.css('.broker-link::text').get()
+        if broker_agency:
+            item['broker_agency'] = broker_agency.replace('\n', '').strip()
         item['broker_phone'] = response.css(
             '.broker-contact__link::text').getall()[1].replace('\n', '')
         item['broker_email'] = decode_email(
